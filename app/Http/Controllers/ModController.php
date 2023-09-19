@@ -13,7 +13,7 @@ use Illuminate\Http\Response;
 
 class ModController implements ModControllerInterface
 {
-    private $modService;
+    private ModService $modService;
 
     public function __construct(ModService $modService)
     {
