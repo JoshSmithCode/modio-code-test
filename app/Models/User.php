@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Game::class);
     }
+
+    public function mods(): HasMany
+    {
+        return $this->hasMany(Mod::class);
+    }
 }
