@@ -11,7 +11,12 @@ class Game extends Model
 {
     use HasFactory, HasTimestamps;
 
-    public string $name;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['name'];
 
     public function user(): BelongsTo
     {

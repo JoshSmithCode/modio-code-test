@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::group(['prefix' => 'games', 'controller' => GameController::class], function(){
+
+    Route::middleware('auth:sanctum')->group(function (){
+        Route::post('','create');
+        Route::get('/{game}', 'read');
+        Route::put('/{game}', 'update');
+        Route::delete('/{game}', 'delete');
+    });
 });
