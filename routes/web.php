@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\ModController;
+use App\Http\Middleware\ModBelongsToGame;
 use App\Http\Controllers\GameController;
 
 /*
@@ -27,5 +30,20 @@ Route::group(['prefix' => 'games', 'controller' => GameController::class], funct
         Route::get('/{game}', 'read');
         Route::put('/{game}', 'update');
         Route::delete('/{game}', 'delete');
+    });
+
+    Route::group(['prefix' => '{game}/mods', 'controller' => ModController::class], function(){
+
+        Route::get('', 'browse');
+
+        Route::middleware('auth:sanctum')->group(function (){
+            Route::post('','create');
+
+            Route::middleware(ModBelongsToGame::class)->group(function(){
+                Route::get('/{mod}', 'read');
+                Route::put('/{mod}', 'update');
+                Route::delete('/{mod}', 'delete');
+            });
+        });
     });
 });

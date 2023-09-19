@@ -2,20 +2,25 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
+
+use App\Models\Mod;
 
 class ModBelongsToGame extends Middleware
 {
     public function handle($request, \Closure $next, ...$guards){
-        if (! $mod = $request->route()->parameter('mod')) {
+        if (! $modId = $request->route()->parameter('mod')) {
             return $next($request);
-            } elseif (! $game = $request->route()->parameter('game')) {
+        } elseif (! $gameId = $request->route()->parameter('game')) {
             return $next($request);
         }
 
-        // todo finish the middleware
+        $mod = Mod::find($modId);
+
+        if(!$mod || $mod->game_id != $gameId){
+            throw new NotFoundHttpException();
+        }
 
         return $next($request);
     }

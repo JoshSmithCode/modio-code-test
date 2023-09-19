@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
-use App\Models\Game;
-use App\Policies\GamePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
+use App\Models\Game;
+use App\Models\Mod;
+use App\Policies\GamePolicy;
+use App\Policies\ModPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -14,7 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Game::class => GamePolicy::class
+        Game::class => GamePolicy::class,
+        Mod::class => ModPolicy::class,
     ];
 
     /**

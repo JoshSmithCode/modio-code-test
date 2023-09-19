@@ -40,14 +40,13 @@ class GameTest extends TestCase
 
         $game = new Game(['name' => 'Test game']);
 
-        $browseGames = Game::factory()
+        Game::factory()
             ->count(30)
             ->for(User::factory()->createOne())
             ->create();
 
         $user = User::factory()->createOne();
         $user->games()->save($game);
-        $user->games()->saveMany($browseGames);
 
         $user->refresh();
         $game->refresh();
@@ -98,7 +97,6 @@ class GameTest extends TestCase
 
     public function testReadSucceeds() : void
     {
-        // todo create the game that we are going to view, adding the required authentication
         $response = $this
             ->post('games', [
             'name' => 'Rogue Knight'
