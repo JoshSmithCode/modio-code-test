@@ -20,7 +20,7 @@ class GameController extends Controller implements GameControllerInterface
 
     public function browse(Request $request): JsonResponse
     {
-        // TODO: Implement browse() method.
+        return new JsonResponse(Game::paginate(10));
     }
 
     public function create(Request $request): JsonResponse

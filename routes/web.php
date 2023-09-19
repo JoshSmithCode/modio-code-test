@@ -20,6 +20,8 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'games', 'controller' => GameController::class], function(){
 
+    Route::get('', 'browse');
+
     Route::middleware('auth:sanctum')->group(function (){
         Route::post('','create');
         Route::get('/{game}', 'read');

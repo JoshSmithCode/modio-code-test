@@ -6,7 +6,6 @@ use App\Models\Game;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class GameTest extends TestCase
@@ -15,6 +14,14 @@ class GameTest extends TestCase
 
     private string $userToken = '';
     private int $existingGameId;
+
+    const GAME_STRUCTURE = [
+        'id',
+        'name',
+        'user_id',
+        'created_at',
+        'updated_at'
+    ];
 
     /**
      * @return string[]
@@ -33,8 +40,15 @@ class GameTest extends TestCase
 
         $game = new Game(['name' => 'Test game']);
 
+        $browseGames = Game::factory()
+            ->count(30)
+            ->for(User::factory()->createOne())
+            ->create();
+
         $user = User::factory()->createOne();
         $user->games()->save($game);
+        $user->games()->saveMany($browseGames);
+
         $user->refresh();
         $game->refresh();
 
@@ -44,18 +58,29 @@ class GameTest extends TestCase
 
     public function testBrowseSucceeds() : void
     {
-        // todo update this test to assert that a paginated response was given
-        //  in order for this test to pass, you will need to seed at least 1 game
         $this
             ->get('games')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
-                'id',
-                'name',
-                'user_id',
-                'created_at',
-                'updated_at'
-            ]);
+            'total',
+            'per_page',
+            'current_page',
+            'last_page',
+            'first_page_url',
+            'last_page_url',
+            'next_page_url',
+            'from',
+            'to',
+            'data' => [
+                '*' => [
+                    'id',
+                    'user_id',
+                    'name',
+                    'created_at',
+                    'updated_at'
+                ]
+            ],
+        ]);
     }
 
     public function testCreateSucceedsWhileAuthenticated() : void
@@ -65,13 +90,7 @@ class GameTest extends TestCase
                 'name' => 'Rogue Knight'
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_CREATED)
-            ->assertJsonStructure([
-                'id',
-                'name',
-                'user_id',
-                'created_at',
-                'updated_at'
-            ])
+            ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
                 'name' => 'Rogue Knight'
             ]);
@@ -88,13 +107,7 @@ class GameTest extends TestCase
         $this
             ->get('games/'.$response->json('id'), $this->getHeaders())
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure([
-                'id',
-                'name',
-                'user_id',
-                'created_at',
-                'updated_at'
-            ])
+            ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
                 'name' => 'Rogue Knight',
             ]);
@@ -120,13 +133,7 @@ class GameTest extends TestCase
                 'name' => 'Rogue Knight Remastered'
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure([
-                'id',
-                'name',
-                'user_id',
-                'created_at',
-                'updated_at'
-            ])
+            ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
                 'name' => 'Rogue Knight Remastered'
             ]);
@@ -158,13 +165,7 @@ class GameTest extends TestCase
             ->withHeaders($this->getHeaders())
             ->get('games/'.$response->json('id'))
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure([
-                'id',
-                'name',
-                'user_id',
-                'created_at',
-                'updated_at'
-            ])
+            ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
                 'name' => 'Rogue Knight'
             ]);
