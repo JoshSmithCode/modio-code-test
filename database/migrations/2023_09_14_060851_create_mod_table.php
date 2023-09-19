@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('mod', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('game_id')->index()->constrained();
+            $table->foreignId('user_id')->index()->constrained();
+            $table->string('name');
             $table->timestamps();
         });
     }
