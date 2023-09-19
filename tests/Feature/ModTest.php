@@ -75,20 +75,25 @@ class ModTest extends TestCase
 
     public function testBrowseSucceeds() : void
     {
-        // todo update this test to assert that a paginated response was given.
-        //  in order for this test to pass, you will need to seed at least 1 game
-        //  and 1 mod
         $game = Game::inRandomOrder()->first();
         $mod = Game::query()->where('game', '=', $game->id)->first();
 
         $this
             ->get('games/'.$game->id.'/mods')
             ->assertStatus(Response::HTTP_OK)
-            ->assertJsonStructure(self::MOD_STRUCTURE)
-            ->assertJsonFragment([
-                'id' => $mod->id
-                // todo assert game is valid
-                // todo assert user is valid
+            ->assertJsonStructure([
+                'total',
+                'per_page',
+                'current_page',
+                'last_page',
+                'first_page_url',
+                'last_page_url',
+                'next_page_url',
+                'from',
+                'to',
+                'data' => [
+                    '*' => self::MOD_STRUCTURE
+                ]
             ]);
     }
 

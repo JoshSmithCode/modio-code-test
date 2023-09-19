@@ -22,8 +22,7 @@ class ModController implements ModControllerInterface
 
     public function browse(Request $request, Game $game): JsonResponse
     {
-        // TODO: Implement browse() method.
-        return new JsonResponse();
+        return new JsonResponse(Mod::paginate(10));
     }
 
     /**

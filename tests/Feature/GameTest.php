@@ -71,13 +71,7 @@ class GameTest extends TestCase
             'from',
             'to',
             'data' => [
-                '*' => [
-                    'id',
-                    'user_id',
-                    'name',
-                    'created_at',
-                    'updated_at'
-                ]
+                '*' => self::GAME_STRUCTURE
             ],
         ]);
     }
