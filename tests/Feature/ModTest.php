@@ -15,8 +15,11 @@ class ModTest extends TestCase
     use RefreshDatabase;
 
     private string $userToken;
+
     private int $userId;
+
     private int $existingGameId;
+
     private int $existingModId;
 
     const MOD_STRUCTURE = [
@@ -25,7 +28,7 @@ class ModTest extends TestCase
         'game_id',
         'user_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -34,7 +37,7 @@ class ModTest extends TestCase
     private function getHeaders()
     {
         return [
-            'Authorization' => 'Bearer '. $this->userToken,
+            'Authorization' => 'Bearer '.$this->userToken,
             'Accept' => 'application/json',
         ];
     }
@@ -73,7 +76,7 @@ class ModTest extends TestCase
         $this->userId = $user->id;
     }
 
-    public function testBrowseSucceeds() : void
+    public function testBrowseSucceeds(): void
     {
         $game = Game::inRandomOrder()->first();
         $mod = Game::query()->where('game', '=', $game->id)->first();
@@ -92,18 +95,18 @@ class ModTest extends TestCase
                 'from',
                 'to',
                 'data' => [
-                    '*' => self::MOD_STRUCTURE
-                ]
+                    '*' => self::MOD_STRUCTURE,
+                ],
             ]);
     }
 
-    public function testCreateSucceedsWhileAuthenticated() : void
+    public function testCreateSucceedsWhileAuthenticated(): void
     {
         $game = Game::inRandomOrder()->first();
 
         $this
             ->post('games/'.$game->id.'/mods', [
-                'name' => 'Lightsaber'
+                'name' => 'Lightsaber',
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJsonStructure(self::MOD_STRUCTURE)
@@ -114,58 +117,58 @@ class ModTest extends TestCase
             ]);
     }
 
-    public function testReadSucceeds() : void
+    public function testReadSucceeds(): void
     {
         // Create a game
         $gameResponse = $this->post('games', [
-            'name' => 'Rogue Knight'
+            'name' => 'Rogue Knight',
         ], $this->getHeaders())->assertStatus(Response::HTTP_CREATED);
 
         // Create a mod against the game
         $modResponse = $this->post('games/'.$gameResponse->json('id').'/mods', [
-            'name' => 'Lightsaber'
+            'name' => 'Lightsaber',
         ], $this->getHeaders())->assertStatus(Response::HTTP_CREATED);
 
         // view the mod
         $this
             ->get('games/'.$gameResponse->json('id').'/mods/'.$modResponse->json('id'),
-            $this->getHeaders())
+                $this->getHeaders())
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure(self::MOD_STRUCTURE)
             ->assertJsonFragment([
-                'name' => 'Lightsaber',
-                'game_id' => $gameResponse->json('id'),
-                'user_id' => $this->userId,
-            ]);
+                    'name' => 'Lightsaber',
+                    'game_id' => $gameResponse->json('id'),
+                    'user_id' => $this->userId,
+                ]);
     }
 
-    public function testCreateFailsWhileUnauthenticated() : void
+    public function testCreateFailsWhileUnauthenticated(): void
     {
         $game = Game::inRandomOrder()->first();
 
         $this
             ->post('games/'.$game->id.'/mods', [
-                'name' => 'Lightsaber'
+                'name' => 'Lightsaber',
             ])
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testUpdateSucceedsWhileAuthenticated() : void
+    public function testUpdateSucceedsWhileAuthenticated(): void
     {
         // Create the game
         $gameResponse = $this->post('games', [
-            'name' => 'Rogue Knight'
+            'name' => 'Rogue Knight',
         ], $this->getHeaders())->assertStatus(Response::HTTP_CREATED);
 
         // Create the mod
         $modResponse = $this->post('games/'.$gameResponse->json('id').'/mods', [
-            'name' => 'Lightsaber'
+            'name' => 'Lightsaber',
         ], $this->getHeaders())->assertStatus(Response::HTTP_CREATED);
 
         // Update the mod
         $this
             ->put('games/'.$gameResponse->json('id').'/mods/'.$modResponse->json('id'), [
-                'name' => 'Lightsabers (Full set)'
+                'name' => 'Lightsabers (Full set)',
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure(self::MOD_STRUCTURE)
@@ -176,7 +179,7 @@ class ModTest extends TestCase
             ]);
     }
 
-    public function testUpdateFailsWhileUnauthenticated() : void
+    public function testUpdateFailsWhileUnauthenticated(): void
     {
         // Rather than creating the game here, due to a current issue with Sanctum,
         // we need to create a game to edit during setup.
@@ -184,37 +187,37 @@ class ModTest extends TestCase
         // this however should fail with 401 Unauthorized, as expected
         $this
             ->put('games/'.$this->existingGameId.'/mods/'.$this->existingModId, [
-                'name' => 'Lightsabers (Full set)'
+                'name' => 'Lightsabers (Full set)',
             ])
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testDeleteSucceedsWhileAuthenticated() : void
+    public function testDeleteSucceedsWhileAuthenticated(): void
     {
         // Create the game
         $gameResponse = $this->post('games', [
-            'name' => 'Rogue Knight'
+            'name' => 'Rogue Knight',
         ], $this->getHeaders());
 
         // Create the mod
         $modResponse = $this->post('games/'.$gameResponse->json('id').'/mods', [
-            'name' => 'Lightsaber'
+            'name' => 'Lightsaber',
         ], $this->getHeaders())->assertStatus(Response::HTTP_CREATED);
 
         // and just for sanity we make sure it actually got created
         $this
             ->get('games/'.$gameResponse->json('id').'/mods/'.$modResponse->json('id'),
-            $this->getHeaders())
+                $this->getHeaders())
             ->assertStatus(Response::HTTP_OK);
 
         // then we finally attempt to delete it without authentication present
         $this
             ->delete('games/'.$gameResponse->json('id').'/mods/'.$modResponse->json('id'),
-            $this->getHeaders())
+                $this->getHeaders())
             ->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
-    public function testDeleteFailsWhileUnauthenticated() : void
+    public function testDeleteFailsWhileUnauthenticated(): void
     {
         // Rather than creating the game here, due to a current issue with Sanctum,
         // we need to create a game to edit during setup.

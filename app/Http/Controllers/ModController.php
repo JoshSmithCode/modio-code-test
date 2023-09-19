@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-
 use App\Http\Controllers\Contracts\ModControllerInterface;
 use App\Http\Resources\ModResource;
 use App\Models\Game;
 use App\Models\Mod;
 use App\Services\ModService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ModController implements ModControllerInterface
 {
@@ -28,8 +27,6 @@ class ModController implements ModControllerInterface
     /**
      * Create a mod.
      *
-     * @param Request $request
-     * @param Game $game
      * @return JsonResponse
      */
     public function create(Request $request, Game $game)
@@ -52,7 +49,7 @@ class ModController implements ModControllerInterface
 
     public function update(Request $request, Game $game, Mod $mod): JsonResponse
     {
-        if($request->user()->cannot('update', $mod)){
+        if ($request->user()->cannot('update', $mod)) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
@@ -66,7 +63,7 @@ class ModController implements ModControllerInterface
 
     public function delete(Request $request, Game $game, Mod $mod): JsonResponse
     {
-        if($request->user()->cannot('delete', $mod)){
+        if ($request->user()->cannot('delete', $mod)) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 

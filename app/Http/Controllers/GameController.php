@@ -39,7 +39,7 @@ class GameController extends Controller implements GameControllerInterface
 
     public function update(Request $request, Game $game): JsonResponse
     {
-        if($request->user()->cannot('update', $game)){
+        if ($request->user()->cannot('update', $game)) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
@@ -52,7 +52,7 @@ class GameController extends Controller implements GameControllerInterface
 
     public function delete(Request $request, Game $game): JsonResponse
     {
-        if($request->user()->cannot('delete', $game)){
+        if ($request->user()->cannot('delete', $game)) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 

@@ -35,6 +35,4 @@ class Handler extends ExceptionHandler
     {
         return new JsonResponse([], Response::HTTP_UNAUTHORIZED);
     }
-
-
 }

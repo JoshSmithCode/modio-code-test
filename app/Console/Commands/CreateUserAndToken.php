@@ -28,7 +28,7 @@ class CreateUserAndToken extends Command
     {
         $user = User::factory()->create([
             'name' => $this->argument('name'),
-            'email' => $this->argument('email')
+            'email' => $this->argument('email'),
         ]);
 
         $token = $user->createToken($this->argument('token'));

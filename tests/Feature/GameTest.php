@@ -13,6 +13,7 @@ class GameTest extends TestCase
     use RefreshDatabase;
 
     private string $userToken = '';
+
     private int $existingGameId;
 
     const GAME_STRUCTURE = [
@@ -20,7 +21,7 @@ class GameTest extends TestCase
         'name',
         'user_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -29,7 +30,7 @@ class GameTest extends TestCase
     private function getHeaders()
     {
         return [
-            'Authorization' => 'Bearer '. $this->userToken,
+            'Authorization' => 'Bearer '.$this->userToken,
             'Accept' => 'application/json',
         ];
     }
@@ -55,46 +56,46 @@ class GameTest extends TestCase
         $this->existingGameId = $game->id;
     }
 
-    public function testBrowseSucceeds() : void
+    public function testBrowseSucceeds(): void
     {
         $this
             ->get('games')
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure([
-            'total',
-            'per_page',
-            'current_page',
-            'last_page',
-            'first_page_url',
-            'last_page_url',
-            'next_page_url',
-            'from',
-            'to',
-            'data' => [
-                '*' => self::GAME_STRUCTURE
-            ],
-        ]);
+                'total',
+                'per_page',
+                'current_page',
+                'last_page',
+                'first_page_url',
+                'last_page_url',
+                'next_page_url',
+                'from',
+                'to',
+                'data' => [
+                    '*' => self::GAME_STRUCTURE,
+                ],
+            ]);
     }
 
-    public function testCreateSucceedsWhileAuthenticated() : void
+    public function testCreateSucceedsWhileAuthenticated(): void
     {
         $this
             ->post('games', [
-                'name' => 'Rogue Knight'
+                'name' => 'Rogue Knight',
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
-                'name' => 'Rogue Knight'
+                'name' => 'Rogue Knight',
             ]);
     }
 
-    public function testReadSucceeds() : void
+    public function testReadSucceeds(): void
     {
         $response = $this
             ->post('games', [
-            'name' => 'Rogue Knight'
-        ], $this->getHeaders());
+                'name' => 'Rogue Knight',
+            ], $this->getHeaders());
 
         $this
             ->get('games/'.$response->json('id'), $this->getHeaders())
@@ -105,33 +106,33 @@ class GameTest extends TestCase
             ]);
     }
 
-    public function testCreateFailsWhileUnauthenticated() : void
+    public function testCreateFailsWhileUnauthenticated(): void
     {
         $this
             ->post('games', [
-                'name' => 'Rogue Knight'
+                'name' => 'Rogue Knight',
             ])
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function testUpdateSucceedsWhileAuthenticated() : void
+    public function testUpdateSucceedsWhileAuthenticated(): void
     {
         $response = $this->post('games', [
-            'name' => 'Rogue Knight'
+            'name' => 'Rogue Knight',
         ], $this->getHeaders());
 
         $this
             ->put('games/'.$response->json('id'), [
-                'name' => 'Rogue Knight Remastered'
+                'name' => 'Rogue Knight Remastered',
             ], $this->getHeaders())
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
-                'name' => 'Rogue Knight Remastered'
+                'name' => 'Rogue Knight Remastered',
             ]);
     }
 
-    public function testUpdateFailsWhileUnauthenticated() : void
+    public function testUpdateFailsWhileUnauthenticated(): void
     {
         // Rather than creating the game here, due to a current issue with Sanctum,
         // we need to create a game to edit during setup.
@@ -139,17 +140,17 @@ class GameTest extends TestCase
         // this however should fail with 401 Unauthorized, as expected
         $this
             ->put('games/'.$this->existingGameId, [
-                'name' => 'Rogue Knight Remastered'
+                'name' => 'Rogue Knight Remastered',
             ], ['HTTP_FAKE' => 'true'])
             ->assertStatus(Response::HTTP_UNAUTHORIZED);
 
     }
 
-    public function testDeleteSucceedsWhileAuthenticated() : void
+    public function testDeleteSucceedsWhileAuthenticated(): void
     {
         // todo again create the game, include the auth.
         $response = $this->withHeaders($this->getHeaders())->post('games', [
-            'name' => 'Rogue Knight'
+            'name' => 'Rogue Knight',
         ]);
 
         // just to ensure the game actually exists
@@ -159,7 +160,7 @@ class GameTest extends TestCase
             ->assertStatus(Response::HTTP_OK)
             ->assertJsonStructure(self::GAME_STRUCTURE)
             ->assertJsonFragment([
-                'name' => 'Rogue Knight'
+                'name' => 'Rogue Knight',
             ]);
 
         // todo include the auth
@@ -169,7 +170,7 @@ class GameTest extends TestCase
             ->assertStatus(Response::HTTP_NO_CONTENT);
     }
 
-    public function testDeleteFailsWhileUnauthenticated() : void
+    public function testDeleteFailsWhileUnauthenticated(): void
     {
         // Rather than creating the game here, due to a current issue with Sanctum,
         // we need to create a game to delete during setup.
