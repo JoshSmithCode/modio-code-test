@@ -17,6 +17,7 @@ class ModController implements ModControllerInterface
 
     public function __construct(ModService $modService)
     {
+        $this->modService = $modService;
     }
 
     public function browse(Request $request, Game $game): JsonResponse
@@ -31,15 +32,13 @@ class ModController implements ModControllerInterface
      */
     public function create(Request $request, Game $game)
     {
-        $mod = new Mod;
-        $mod->game_id = $game->id;
-        $mod->user_id = $request->user()->id;
-        $mod->name = $request->get('name');
-        $mod->save();
+        $modResource = $this->modService->create(
+            $request->user(),
+            $game,
+            $request->get('name')
+        );
 
-        $mod->refresh();
-
-        return new JsonResponse(new ModResource($mod), Response::HTTP_CREATED);
+        return new JsonResponse($modResource, Response::HTTP_CREATED);
     }
 
     public function read(Request $request, Game $game, Mod $mod): JsonResponse
@@ -53,12 +52,9 @@ class ModController implements ModControllerInterface
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
-        $mod->name = $request->get('name');
-        $mod->save();
+        $modResource = $this->modService->update($mod, $request->get('name'));
 
-        $mod->refresh();
-
-        return new JsonResponse(new ModResource($mod));
+        return new JsonResponse($modResource);
     }
 
     public function delete(Request $request, Game $game, Mod $mod): JsonResponse

@@ -16,6 +16,7 @@ class GameController extends Controller implements GameControllerInterface
 
     public function __construct(GameService $gameService)
     {
+        $this->gameService = $gameService;
     }
 
     public function browse(Request $request): JsonResponse
@@ -25,11 +26,12 @@ class GameController extends Controller implements GameControllerInterface
 
     public function create(Request $request): JsonResponse
     {
-        $game = $request->user()->games()->save(
-            new Game(['name' => $request->get('name')])
+        $gameResource = $this->gameService->create(
+            $request->user(),
+            $request->get('name')
         );
 
-        return new JsonResponse(new GameResource($game), Response::HTTP_CREATED);
+        return new JsonResponse($gameResource, Response::HTTP_CREATED);
     }
 
     public function read(Request $request, Game $game): JsonResponse
@@ -43,11 +45,9 @@ class GameController extends Controller implements GameControllerInterface
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
-        $game->name = $request->get('name');
-        $game->save();
-        $game->refresh();
+        $gameResource = $this->gameService->update($game, $request->get('name'));
 
-        return new JsonResponse(new GameResource($game));
+        return new JsonResponse($gameResource);
     }
 
     public function delete(Request $request, Game $game): JsonResponse
